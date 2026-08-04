@@ -88,17 +88,24 @@ An LLM agent that answers plain-English questions about any connected database �
 
 ---
 
-#### Record Room — Music Streaming App 🚧 *In Progress*
-*Personal project · Node.js, Express, Supabase (PostgreSQL + Storage)*
-🔗 [Repo](https://github.com/crustdebug/Record_room) &nbsp;|&nbsp; 🔴 [Live demo](https://record-room.vercel.app)
+Record Room — Vinyl Collection Asset Register
 
-A vintage-inspired music streaming app where albums are displayed as records mounted on themed walls, with an interactive turntable player. Full-stack build with real auth (bcrypt + sessions), role-based access (Admin/User), and audio streaming directly from Supabase Storage.
+Personal project · Node.js, Express 5, Supabase (PostgreSQL + Storage), Zod, Vitest 🔗 Repo
 
-Currently under active development — more features and a polished demo write-up coming soon.
+Discogs is a database of releases — it knows a 1977 pressing exists and roughly what it sells for. It can't know that your copy is NM media in a VG+ sleeve, that you paid £25 for it in Leeds in 2019, or that side B skips. A mid-size collection is 500–2,000 records and easily £7,500–£30,000 of uninsured property, because home insurance needs an itemised, valued schedule that nobody has.
 
----
+Record Room is the asset register for that: it catalogs each copy with condition, provenance, and value, and produces the photographed, dated valuation report an insurer actually asks for.
 
-### 📫 Let's Connect
+Insurance-grade output — generates a PDF listing every record with pressing, Goldmine grades, purchase history, current estimate, and the method behind each figure, plus a scheduled-items CSV and server-timestamped condition photos (taken_at is never accepted from the client — evidence that can be backdated isn't evidence).
+Valuation engine with defensible assumptions — condition multipliers weight media 70% / sleeve 30%, anchored at VG+ rather than NM because lowest_price skews mid-grade, and anchoring high would systematically overvalue collections in the one direction that costs the owner money at claim time.
+Discogs API terms shaped the architecture — their terms forbid displaying marketplace data more than six hours after it was current, so stored prices expire and the app falls back to its own dated estimate, with a test that fails if a stale price reaches a report.
+Hand-written RFC 4180 CSV parser for Discogs collection imports — a naive split(',') turns "Earth, Wind & Fire" into silent column-shift corruption; unparseable rows are reported rather than dropped, because a partial import that looks complete is how someone ends up trusting a bad inventory.
+Currencies are never summed — Discogs localizes prices by request origin, so totals are reported per currency; an exchange rate would invent precision the app can't defend.
+168 tests (Vitest + Supertest) covering auth, CRUD, valuation freshness, PDF/CSV generation, share-link isolation, and per-collector ownership scoping — run against an in-memory Supabase stand-in, so CI needs no credentials and the suite finishes in ~4s.
+Also: installable PWA readable offline (check a record while standing in a shop with bad signal), barcode scanning via BarcodeDetector, a wantlist with priorities and max prices, revocable read-only share links that never expose what you paid, and needle-drop playback through a draggable-tonearm turntable.
 
-Open to full-time SWE roles (backend, full-stack, or GenAI-focused) — immediately available.
-Reach me at **chinmaynanda1708@gmail.com** or on [LinkedIn](https://linkedin.com/in/chinmay-nanda-09578333b).
+Not deployed publicly — runs locally in about five minutes with a free Supabase project. npm run seed:demo builds a 20-record demo collection with cover art, grades, values, and playable tracks.
+
+📫 Let's Connect
+
+Open to full-time SWE roles (backend, full-stack, or GenAI-focused) — immediately available. Reach me at chinmaynanda1708@gmail.com or on LinkedIn.
